@@ -110,7 +110,7 @@ public:
       circleFlags = cv::CALIB_CB_ASYMMETRIC_GRID + cv::CALIB_CB_CLUSTERING;
     }
 
-    params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    params.push_back(cv::IMWRITE_PNG_COMPRESSION);
     params.push_back(9);
 
     board.resize(boardDims.width * boardDims.height);
@@ -347,14 +347,14 @@ private:
 
         if(mode == COLOR || mode == SYNC)
         {
-          cv::cvtColor(color, colorDisp, CV_GRAY2BGR);
+          cv::cvtColor(color, colorDisp, cv::COLOR_GRAY2BGR);
           cv::drawChessboardCorners(colorDisp, boardDims, pointsColor, foundColor);
           //cv::resize(colorDisp, colorDisp, cv::Size(), 0.5, 0.5);
           //cv::flip(colorDisp, colorDisp, 1);
         }
         if(mode == IR || mode == SYNC)
         {
-          cv::cvtColor(irGrey, irDisp, CV_GRAY2BGR);
+          cv::cvtColor(irGrey, irDisp, cv::COLOR_GRAY2BGR);
           cv::drawChessboardCorners(irDisp, boardDims, pointsIr, foundIr);
           //cv::resize(irDisp, irDisp, cv::Size(), 0.5, 0.5);
           //cv::flip(irDisp, irDisp, 1);
@@ -743,7 +743,7 @@ private:
 #if CV_MAJOR_VERSION == 2
     error = cv::stereoCalibrate(pointsBoard, pointsIr, pointsColor, cameraMatrixIr, distortionIr, cameraMatrixColor, distortionColor, sizeColor,
                                 rotation, translation, essential, fundamental, termCriteria, cv::CALIB_FIX_INTRINSIC);
-#elif CV_MAJOR_VERSION == 3
+#elif CV_MAJOR_VERSION == 3 || CV_MAJOR_VERSION == 4
     error = cv::stereoCalibrate(pointsBoard, pointsIr, pointsColor, cameraMatrixIr, distortionIr, cameraMatrixColor, distortionColor, sizeColor,
                                 rotation, translation, essential, fundamental, cv::CALIB_FIX_INTRINSIC, termCriteria);
 #endif
@@ -1092,6 +1092,8 @@ private:
 #if CV_MAJOR_VERSION == 2
     cv::solvePnPRansac(board, points[index], cameraMatrix, distortion, rvec, translation, false, 300, 0.05, board.size(), cv::noArray(), cv::ITERATIVE);
 #elif CV_MAJOR_VERSION == 3
+    cv::solvePnPRansac(board, points[index], cameraMatrix, distortion, rvec, translation, false, 300, 0.05, 0.99, cv::noArray(), cv::SOLVEPNP_ITERATIVE);
+#elif CV_MAJOR_VERSION == 4
     cv::solvePnPRansac(board, points[index], cameraMatrix, distortion, rvec, translation, false, 300, 0.05, 0.99, cv::noArray(), cv::SOLVEPNP_ITERATIVE);
 #endif
     cv::Rodrigues(rvec, rotation);
